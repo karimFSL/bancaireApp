@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.image.*?>
+<?import javafx.scene.text.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.effect.*?>
+<?import javafx.scene.*?>
+<?import java.lang.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.layout.AnchorPane?>
+
+<AnchorPane prefHeight="400.0" prefWidth="700.0" xmlns="http://javafx.com/javafx/8" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controllers.LoginController">
+   <children>
+      <SplitPane dividerPositions="0.29797979797979796" layoutX="192.0" layoutY="186.0" prefHeight="400.0" prefWidth="700.0" AnchorPane.bottomAnchor="0.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
+        <items>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <ImageView fitHeight="184.0" fitWidth="187.0" layoutX="10.0" layoutY="105.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../../../../Downloads/Beige%20et%20Sarcelle%20Plat%20Illustratif%20Livraison%20Services%20Logo.png" />
+                     </image>
+                  </ImageView>
+               </children>
+            </AnchorPane>
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+               <children>
+                  <Label layoutX="109.0" layoutY="56.0" text="App bank connectez-vous ! ">
+                     <font>
+                        <Font size="20.0" />
+                     </font>
+                  </Label>
+                  <Label layoutX="107.0" layoutY="200.0" text="mot de passe :" />
+                  <Label layoutX="107.0" layoutY="163.0" text="Email d'utilisateur :" />
+                  <PasswordField fx:id="loginMdp" layoutX="232.0" layoutY="196.0" />
+                  <TextField fx:id="loginEmail" layoutX="232.0" layoutY="159.0" />
+                  <Button fx:id="signup" layoutX="253.0" layoutY="295.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="107.0" text="Inscription" />
+                  <Button fx:id="login" layoutX="253.0" layoutY="256.0" mnemonicParsing="false" onAction="#login" prefHeight="25.0" prefWidth="107.0" text="Connexion" />
+               </children>
+            </AnchorPane>
+        </items>
+      </SplitPane>
+   </children>
+</AnchorPane>
