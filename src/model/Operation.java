@@ -8,18 +8,18 @@ import javafx.beans.property.StringProperty;
 public class Operation {
 
 	private IntegerProperty id_Operation;
-	private IntegerProperty type_Op;
+	private StringProperty type_Op;
 	private StringProperty date_Op;
-	private IntegerProperty valeur_Op;
+	private StringProperty valeur_Op;
 
-	public Operation(int int1, int int2, String string, int int3) {
+	public Operation(int idOperation, String typeOperation, String dateOperation, String valeurOperation) {
 		// TODO Auto-generated constructor stub
 		super();
 
-		this.id_Operation = new SimpleIntegerProperty(int1);
-		this.type_Op = new SimpleIntegerProperty(int2);
-		this.date_Op = new SimpleStringProperty(string);
-		this.valeur_Op = new SimpleIntegerProperty(int3);
+		this.id_Operation = new SimpleIntegerProperty(idOperation);
+		this.type_Op = new SimpleStringProperty(typeOperation);
+		this.date_Op = new SimpleStringProperty(dateOperation);
+		this.valeur_Op = new SimpleStringProperty(valeurOperation);
 	}
 
 	public final IntegerProperty id_OperationProperty() {
@@ -34,15 +34,15 @@ public class Operation {
 		this.id_OperationProperty().set(id_Operation);
 	}
 
-	public final IntegerProperty type_OpProperty() {
+	public final StringProperty type_OpProperty() {
 		return this.type_Op;
 	}
 
-	public final int getType_Op() {
-		return this.type_OpProperty().get();
+	public final String getType_Op() {
+		return this.type_Op.get();
 	}
 
-	public final void setType_Op(final int type_Op) {
+	public final void setType_Op(final String type_Op) {
 		this.type_OpProperty().set(type_Op);
 	}
 
@@ -58,15 +58,15 @@ public class Operation {
 		this.date_OpProperty().set(date_Op);
 	}
 
-	public final IntegerProperty valeur_OpProperty() {
+	public final StringProperty valeur_OpProperty() {
 		return this.valeur_Op;
 	}
 
-	public final int getValeur_Op() {
+	public final String getValeur_Op() {
 		return this.valeur_OpProperty().get();
 	}
 
-	public final void setValeur_Op(final int valeur_Op) {
+	public final void setValeur_Op(final String valeur_Op) {
 		this.valeur_OpProperty().set(valeur_Op);
 	}
 

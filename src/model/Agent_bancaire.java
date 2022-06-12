@@ -1,6 +1,7 @@
 package model;
 
 import javafx.beans.property.IntegerProperty;
+import javafx.beans.property.SimpleIntegerProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -9,6 +10,28 @@ public class Agent_bancaire {
 	private IntegerProperty idPersonnel;
 	private StringProperty personnelEmail;
 	private StringProperty personnelPassword;
+	
+	
+	   //Constructor
+    public Agent_bancaire() {
+        this.personnelEmail = new SimpleStringProperty();
+        this.personnelPassword = new SimpleStringProperty();
+    
+    }
+    
+	public Agent_bancaire(IntegerProperty idPersonnel, StringProperty personnelEmail, StringProperty personnelPassword) {
+		super();
+		this.idPersonnel = idPersonnel;
+		this.personnelEmail = personnelEmail;
+		this.personnelPassword = personnelPassword;
+	}
+
+	public Agent_bancaire(String emailperso, String passwordperso) {
+		// TODO Auto-generated constructor stub
+		this.personnelEmail = new SimpleStringProperty(emailperso);
+		this.personnelPassword = new SimpleStringProperty(passwordperso);
+	}
+
 
 	public final IntegerProperty idPersonnelProperty() {
 		return this.idPersonnel;
@@ -46,21 +69,8 @@ public class Agent_bancaire {
 		this.personnelPasswordProperty().set(personnelPassword);
 	}
 
-	public Agent_bancaire(IntegerProperty idPersonnel, StringProperty personnelEmail, StringProperty personnelPassword) {
-		super();
-		this.idPersonnel = idPersonnel;
-		this.personnelEmail = personnelEmail;
-		this.personnelPassword = personnelPassword;
+	@Override
+	public String toString() {
+		return "Agent_bancaire [personnelEmail=" + personnelEmail.getValue() + ", personnelPassword=" + personnelPassword.getValue() + "]";
 	}
-
-	public Agent_bancaire(String emailperso, String passwordperso) {
-		// TODO Auto-generated constructor stub
-		this.personnelEmail = new SimpleStringProperty(emailperso);
-		this.personnelPassword = new SimpleStringProperty(passwordperso);
-	}
-
-	public Agent_bancaire() {
-		// TODO Auto-generated constructor stub
-	}
-
 }

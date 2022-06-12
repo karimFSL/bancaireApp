@@ -6,32 +6,65 @@ import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Compte;
 import model.Operation;
 import util.DBUtil;
 
 public class OperationDao {
 
-	public ObservableList<Operation> trouverOperations() {
 
-		ObservableList<Operation> lstOperations = FXCollections.observableArrayList();
+	public static ObservableList<Operation> getOperations() throws ClassNotFoundException, SQLException {
+
+		ObservableList<Operation> operationsList = FXCollections.observableArrayList();
+		String selectStmt = "SELECT id_Operation, type_Op, date_Op, valeur_Op FROM operation";
 
 		try {
-			Connection connect3 = DBUtil.initConnection();
-			java.sql.Statement state3 = connect3.createStatement();
-			ResultSet result3 = state3.executeQuery("SELECT id_Operation, type_Op, date_Op, valeur_Op FROM operation");
-			while (result3.next()) {
-				Operation uneoperation = new Operation(result3.getInt("id_Operation"), result3.getInt("type_Op"),
-						result3.getString("date_Op"), result3.getInt("valeur_Op"));// ces memes "bleu" sont les
-																					// variables
-																					// à
-																					// creer dans operation.Java
-				lstOperations.add(uneoperation);
-			}
+			// Get ResultSet from dbExecuteQuery method
+			ResultSet rsEmp = DBUtil.dbExecuteQuery(selectStmt);
+			// Send ResultSet to the getEmployeeFromResultSet method and get employee object
+			operationsList = getAccountsFromResultSet(rsEmp);
+			// Return employee object
+			return operationsList;
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("While retrieving Operations, an error occurred: " + e);
+			// Return exception
+			throw e;
 		}
-		return lstOperations;
+	}
+	
+	
+	public static ObservableList<Operation> getOperationsByNum(int operationNum) throws ClassNotFoundException, SQLException {
+
+		ObservableList<Operation> operationsList = FXCollections.observableArrayList();
+		String selectStmt = "SELECT id_Operation, type_Op, date_Op, valeur_Op FROM operation WHERE id_Operation=" + operationNum;
+
+		try {
+			// Get ResultSet from dbExecuteQuery method
+			ResultSet rsEmp = DBUtil.dbExecuteQuery(selectStmt);
+			// Send ResultSet to the getEmployeeFromResultSet method and get employee object
+			operationsList = getAccountsFromResultSet(rsEmp);
+			// Return employee object
+			return operationsList;
+
+		} catch (SQLException e) {
+			System.out.println("While retrieving Operations, an error occurred: " + e);
+			// Return exception
+			throw e;
+		}
+	}
+
+	// Use ResultSet from DB as parameter and set ObservableList<Operation> Object's
+	// attributes
+	// and return ObservableList<Operation> object.
+	private static ObservableList<Operation> getAccountsFromResultSet(ResultSet rs) throws SQLException {
+		ObservableList<Operation> operationsList = FXCollections.observableArrayList();
+		while (rs.next()) {
+			Operation uneOperation = new Operation(rs.getInt("id_Operation"), rs.getString("type_Op"),
+					rs.getString("date_Op"), rs.getString("valeur_Op"));
+			operationsList.add(uneOperation);
+		}
+		return operationsList;
 	}
 
 }

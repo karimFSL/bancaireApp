@@ -16,6 +16,33 @@ public class Client {
 	private StringProperty telClient;
 	private StringProperty emailClient;
 	private StringProperty dateClient;
+	
+	
+	// Constructeurs
+	public Client() {
+		this(0, null, null, null, null, null, null, null);
+	}
+
+	public Client(int idClient, String nomClient, String prenomClient, String villeClient, String adresseClient,
+			String telClient, String emailClient, String dateClient) {
+
+		this.idClient = new SimpleIntegerProperty(idClient);
+		this.nomClient = new SimpleStringProperty(nomClient);
+		this.prenomClient = new SimpleStringProperty(prenomClient);
+		this.villeClient = new SimpleStringProperty(villeClient);
+		this.adresseClient = new SimpleStringProperty(adresseClient);
+		this.telClient = new SimpleStringProperty(telClient);
+		this.emailClient = new SimpleStringProperty(emailClient);
+		this.dateClient = new SimpleStringProperty(dateClient);
+	}
+
+	public Client(int idClient, String nomClient, String prenomClient) {
+
+		this.idClient = new SimpleIntegerProperty(idClient);
+		this.nomClient = new SimpleStringProperty(nomClient);
+		this.prenomClient = new SimpleStringProperty(prenomClient);
+
+	}
 
 	// Getters & setters
 	public final IntegerProperty idClientProperty() {
@@ -115,30 +142,6 @@ public class Client {
 	}
 	///
 
-	// Constructeurs
-	public Client() {
-		this(0, null, null, null, null, null, null, null);
-	}
 
-	public Client(int idClient, String nomClient, String prenomClient, String villeClient, String adresseClient,
-			String telClient, String emailClient, String dateClient) {
-
-		this.idClient = new SimpleIntegerProperty(idClient);
-		this.nomClient = new SimpleStringProperty(nomClient);
-		this.prenomClient = new SimpleStringProperty(prenomClient);
-		this.villeClient = new SimpleStringProperty(villeClient);
-		this.adresseClient = new SimpleStringProperty(adresseClient);
-		this.telClient = new SimpleStringProperty(telClient);
-		this.emailClient = new SimpleStringProperty(emailClient);
-		this.dateClient = new SimpleStringProperty(dateClient);
-	}
-
-	public Client(int idClient, String nomClient, String prenomClient) {
-
-		this.idClient = new SimpleIntegerProperty(idClient);
-		this.nomClient = new SimpleStringProperty(nomClient);
-		this.prenomClient = new SimpleStringProperty(prenomClient);
-
-	}
 
 }

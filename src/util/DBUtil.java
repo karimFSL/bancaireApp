@@ -6,8 +6,9 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
-import com.sun.rowset.CachedRowSetImpl;
-
+import javax.sql.rowset.CachedRowSet;
+import javax.sql.rowset.RowSetFactory;
+import javax.sql.rowset.RowSetProvider;
 
 
 public class DBUtil {
@@ -52,10 +53,12 @@ public class DBUtil {
 	
 	
 	  //DB Execute Query Operation
-    public static ResultSet dbExecuteQuery(String queryStmt) throws SQLException, ClassNotFoundException {
+		public static ResultSet dbExecuteQuery(String queryStmt) throws SQLException, ClassNotFoundException {
         //Declare statement, resultSet and CachedResultSet as null
-        Statement stmt = null;
         ResultSet resultSet = null;
+        Statement stmt = null;
+        RowSetFactory aFactory = RowSetProvider.newFactory();
+        CachedRowSet crs = aFactory.createCachedRowSet();
     
         try {
             //Connect to DB (Establish Oracle Connection)
@@ -65,6 +68,10 @@ public class DBUtil {
             stmt = connect.createStatement();
             //Execute select (query) operation
             resultSet = stmt.executeQuery(queryStmt);
+            
+            //In order to prevent "java.sql.SQLRecoverableException: Closed Connection: next" error
+            //We are using CachedRowSet
+            crs.populate(resultSet);
    
         } catch (SQLException e) {
             System.out.println("Problem occurred at executeQuery operation : " + e);
@@ -82,8 +89,10 @@ public class DBUtil {
             dbDisconnect();
         }
         //Return CachedRowSet
-        return resultSet;
+        return crs;
     }
+    
+    
     //DB Execute Update (For Update/Insert/Delete) Operation
     public static void dbExecuteUpdate(String sqlStmt) {
         //Declare statement as null
@@ -112,12 +121,4 @@ public class DBUtil {
             dbDisconnect();
         }
     }
-
-//	public static java.sql.Connection initConnection() {
-//		if (connect == null) {
-//			new DBUtil();
-//		}
-//		return connect;
-//	}
-
 }

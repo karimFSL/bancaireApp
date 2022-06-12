@@ -1,6 +1,10 @@
 package controllers;
 
 import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Objects;
+
+import com.mysql.jdbc.StringUtils;
 
 import application.Main;
 import dao.ClientDao;
@@ -21,6 +25,7 @@ import javafx.stage.Stage;
 import model.Client;
 import model.Compte;
 import model.Operation;
+import util.Util;
 
 public class AccueilController {
 
@@ -32,6 +37,10 @@ public class AccueilController {
 	private TableColumn<Client, String> clNom;
 	@FXML
 	private TableColumn<Client, String> clPrenom;
+	@FXML
+	private TableColumn<Client, String> clVille;
+	@FXML
+	private TableColumn<Client, String> clAdresse;
 	// ___interaction
 	@FXML
 	private Label lblnom;
@@ -69,9 +78,25 @@ public class AccueilController {
 	private Label lblsolde;
 	// interaction
 	@FXML
-	private TextField tfNom;
+	private TextField textFieldNom;
 	@FXML
-	private TextField tfPrenom;
+	private TextField textFieldPrenom;
+	@FXML
+	private TextField textFieldVille;
+	@FXML
+	private TextField numOperation;
+	@FXML
+	private TextField textFieldNumeroCompte;
+
+	@FXML
+	private TextField numCompteTextField;
+	@FXML
+	private TextField nomCompteTextField;
+	@FXML
+	private TextField dateCreationCompteTextField;
+	@FXML
+	private TextField soldeCompteTextField;
+
 	@FXML
 	private Button butfind;
 
@@ -83,11 +108,13 @@ public class AccueilController {
 	@FXML
 	private TableColumn<Operation, Integer> IdOp;
 	@FXML
-	private TableColumn<Operation, Integer> typeOp;
+	private TableColumn<Operation, String> typeOp;
 	@FXML
 	private TableColumn<Operation, String> dateOp;
 	@FXML
-	private TableColumn<Operation, Integer> valeurOp;
+	private TableColumn<Operation, String> valeurOp;
+
+	private Stage dialogStage;
 
 	private HomeEditButtonListener homeEditButtonListener;
 
@@ -123,6 +150,8 @@ public class AccueilController {
 		// initialisation nom prenom
 		clNom.setCellValueFactory(cellData -> cellData.getValue().nomClientProperty());
 		clPrenom.setCellValueFactory(cellData -> cellData.getValue().prenomClientProperty());
+		clVille.setCellValueFactory(cellData -> cellData.getValue().villeClientProperty());
+		clAdresse.setCellValueFactory(cellData -> cellData.getValue().adresseClientProperty());
 
 		// intialise compte
 //		txtIdCmp.setCellValueFactory(cellData -> cellData.getValue().id_compteProperty().asObject());
@@ -135,9 +164,9 @@ public class AccueilController {
 
 		// initialise operation
 		IdOp.setCellValueFactory(cellData -> cellData.getValue().id_OperationProperty().asObject());
-		typeOp.setCellValueFactory(cellData -> cellData.getValue().type_OpProperty().asObject());
+		typeOp.setCellValueFactory(cellData -> cellData.getValue().type_OpProperty());
 		dateOp.setCellValueFactory(cellData -> cellData.getValue().date_OpProperty());
-		valeurOp.setCellValueFactory(cellData -> cellData.getValue().valeur_OpProperty().asObject());
+		valeurOp.setCellValueFactory(cellData -> cellData.getValue().valeur_OpProperty());
 
 		// labels
 
@@ -149,38 +178,17 @@ public class AccueilController {
 //		tbCompte.getSelectionModel().selectedItemProperty()
 //				.addListener((observable, oldValue, newValue) -> AfficherDetailsCompte(newValue));
 
-		fillTAbClient();
+		// fillTAbClient();
 		// fillTabCompte();
-		fillTabOperation();
+		// fillTabOperation();
 	}
 
 	// controle partie client
 	private ObservableList<Client> lstClients = FXCollections.observableArrayList();
-
-	public void fillTAbClient() {
-		ClientDao cldao = new ClientDao();
-		lstClients = cldao.trouverClients();
-		tbClient.setItems(lstClients);
-	}
-
-	// controle partie compte
-	private ObservableList<Compte> lstComptes = FXCollections.observableArrayList();
-
-	public void fillTabCompte() {
-		CompteDao cmpdao = new CompteDao();
-		lstComptes = cmpdao.trouverComptes();
-		tbCompte.setItems(lstComptes);
-	}
-
+	// Account partie operation
+	private ObservableList<Compte> lstAccount = FXCollections.observableArrayList();
 	// controle partie operation
 	private ObservableList<Operation> lstOperations = FXCollections.observableArrayList();
-	private Stage dialogStage;
-
-	public void fillTabOperation() {
-		OperationDao opdao = new OperationDao();
-		lstOperations = opdao.trouverOperations();
-		tbOperation.setItems(lstOperations);
-	}
 
 	/**
 	 * Called when the user clicks on the delete button.
@@ -214,7 +222,136 @@ public class AccueilController {
 		int selectedIndex = tbOperation.getSelectionModel().getSelectedIndex();
 		tbOperation.getItems().remove(selectedIndex);
 	}
-	// --------/sec1
+
+	@FXML
+	private void searchCompte() {
+		int selectedIndex = tbCompte.getSelectionModel().getSelectedIndex();
+		tbCompte.getItems().remove(selectedIndex);
+	}
+
+	@FXML
+	private void searchOperation() {
+
+		String numOperationValue = numOperation.getText();
+
+		Alert alert = null;
+
+		if (!numOperationValue.isEmpty() && Util.isNumeric(numOperationValue)) {
+			try {
+				lstOperations = OperationDao.getOperationsByNum(Integer.parseInt(numOperationValue));
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (lstOperations.isEmpty()) {
+				alert = new Alert(AlertType.WARNING);
+				alert.initOwner(Main.getPrimaryStage());
+				alert.setTitle("Num Operation research");
+
+				alert.setHeaderText("No operation found with operation number " + numOperationValue);
+				alert.setContentText("No modifcation performed. Enter please an existing operation Number.");
+				alert.showAndWait();
+			} else {
+				tbOperation.setItems(lstOperations);
+			}
+
+		} else {
+			alert = new Alert(AlertType.ERROR);
+			alert.initOwner(Main.getPrimaryStage());
+			alert.setTitle("Num Operation research");
+			if (numOperation.getText().isEmpty()) {
+				alert.setHeaderText("Operation num is empty");
+				alert.setContentText("Enter please a valid operation number.");
+			} else if (!Util.isNumeric(numOperation.getText())) {
+				alert.setHeaderText("Operation num is not a number");
+				alert.setContentText("Enter please a valid operation number.");
+
+			}
+			alert.showAndWait();
+		}
+	}
+
+	@FXML
+	private void searchClient() {
+		String nomClientValue = textFieldNom.getText();
+		String prenomClientValue = textFieldPrenom.getText();
+		String villeCLientValue = textFieldVille.getText();
+
+		Alert alert = null;
+
+		if (!nomClientValue.isEmpty() && !prenomClientValue.isEmpty()) {
+			try {
+				lstClients = ClientDao.getClientsByNomEtPrenom(nomClientValue, prenomClientValue, villeCLientValue);
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (lstClients.isEmpty()) {
+				alert = new Alert(AlertType.WARNING);
+				alert.initOwner(Main.getPrimaryStage());
+				alert.setTitle("Client research");
+
+				alert.setHeaderText("No operation found with client lastname " + nomClientValue + " and firstname "
+						+ prenomClientValue);
+				alert.setContentText("No modifcation performed. Enter please an existing lastname and firstname.");
+				alert.showAndWait();
+			} else {
+				tbClient.setItems(lstClients);
+			}
+
+		} else {
+			alert = new Alert(AlertType.ERROR);
+			alert.initOwner(Main.getPrimaryStage());
+			alert.setTitle("Client research");
+
+			alert.setHeaderText("firstname and/or lastname is/are empty(ies)");
+			alert.setContentText("Enter please a valid firstname and lastname.");
+			alert.showAndWait();
+		}
+	}
+
+	@FXML
+	private void searchAccount() {
+		String accountNumberValue = textFieldNumeroCompte.getText();
+
+		Alert alert = null;
+
+		if (!accountNumberValue.isEmpty()) {
+			try {
+				lstAccount = CompteDao.getAccountById(accountNumberValue);
+			} catch (ClassNotFoundException | SQLException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+
+			if (lstAccount.isEmpty()) {
+				alert = new Alert(AlertType.WARNING);
+				alert.initOwner(Main.getPrimaryStage());
+				alert.setTitle("Account research");
+
+				alert.setHeaderText("No account found with account number " + accountNumberValue);
+				alert.setContentText("No modifcation performed. Enter please an existing account Number.");
+				alert.showAndWait();
+			} else {
+				Compte myAccount = lstAccount.get(0);
+				numCompteTextField.setText(String.valueOf(myAccount.getId_compte()));
+				nomCompteTextField.setText(myAccount.getNomClient());
+				dateCreationCompteTextField.setText(myAccount.getDate_compte());
+				soldeCompteTextField.setText(String.valueOf(myAccount.getSolde_compte()));
+			}
+
+		} else {
+			alert = new Alert(AlertType.ERROR);
+			alert.initOwner(Main.getPrimaryStage());
+			alert.setTitle("Account research");
+
+			alert.setHeaderText("Account number is empty");
+			alert.setContentText("Enter please a valid account number.");
+			alert.showAndWait();
+		}
+	}
 
 	/**
 	 * Called when the user clicks the new button. Opens a dialog to edit details
@@ -255,6 +392,7 @@ public class AccueilController {
 	@FXML
 	private void handleAddNewPerson() throws IOException {
 		Client newClient = new Client();
+		System.out.println("dsdss");
 		boolean newClicked = homeAddButtonListener.addButtonClicked(newClient);
 		if (newClicked) {
 			AfficherDetailsClient(newClient);
@@ -293,6 +431,27 @@ public class AccueilController {
 	public interface HomeAddButtonListener {
 
 		boolean addButtonClicked(Client newClient);
+	}
+
+	public void fillTAbClient() {
+		try {
+			lstClients = ClientDao.getClients();
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		tbClient.setItems(lstClients);
+	}
+
+	public void fillTabOperation() {
+
+		try {
+			lstOperations = OperationDao.getOperations();
+		} catch (ClassNotFoundException | SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		tbOperation.setItems(lstOperations);
 	}
 
 }

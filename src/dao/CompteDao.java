@@ -6,31 +6,45 @@ import java.sql.SQLException;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import model.Client;
 import model.Compte;
 import util.DBUtil;
 
 public class CompteDao {
 
-	public ObservableList<Compte> trouverComptes() {
+	public static ObservableList<Compte> getAccountById(String accountNumber) throws ClassNotFoundException, SQLException {
 
-		ObservableList<Compte> lstComptes = FXCollections.observableArrayList();
+		ObservableList<Compte> accountsList = FXCollections.observableArrayList();
+		String selectStmt = "SELECT id_Compte,  sole_Cmp, client.Id_Client, nom_Cl, Prenom_Cl, date_Cmp FROM compte INNER JOIN client WHERE client.Id_Client=compte.Id_Client AND compte.id_Compte='" + accountNumber + "'";
 
 		try {
-			Connection connect2 = DBUtil.initConnection();
-			java.sql.Statement state2 = connect2.createStatement();
-			ResultSet result2 = state2.executeQuery(
-					"SELECT id_Compte,  solde_Cmp, client.Id_Client, nom_Cl, Prenom_Cl, date_Cmp FROM compte INNER JOIN client WHERE client.Id_Client=compte.Id_Client");
-			while (result2.next()) {
-				Compte unCompte = new Compte(result2.getInt("id_compte"), result2.getInt("solde_Cmp"),
-						result2.getInt("client.id_Client"), result2.getString("nom_Cl"), result2.getString("Prenom_Cl"),
-						result2.getString("date_Cmp"));
-				lstComptes.add(unCompte);
-			}
+			// Get ResultSet from dbExecuteQuery method
+			ResultSet rsEmp = DBUtil.dbExecuteQuery(selectStmt);
+			// Send ResultSet to the getEmployeeFromResultSet method and get employee object
+			accountsList = getAccountsFromResultSet(rsEmp);
+			// Return employee object
+			return accountsList;
+			
 
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("While retrieving Account, an error occurred: " + e);
+			// Return exception
+			throw e;
 		}
-		return lstComptes;
+	}
+
+	// Use ResultSet from DB as parameter and set ObservableList<Compte> Object's
+	// attributes
+	// and return ObservableList<Compte> object.
+	private static ObservableList<Compte> getAccountsFromResultSet(ResultSet rs) throws SQLException {
+		ObservableList<Compte> accountsList = FXCollections.observableArrayList();
+		while (rs.next()) {
+			Compte unCompte = new Compte(rs.getInt("id_Compte"), rs.getInt("sole_Cmp"),
+					rs.getInt("Id_Client"), rs.getString("nom_Cl"), rs.getString("Prenom_Cl"),
+					rs.getString("date_Cmp"));
+			accountsList.add(unCompte);
+		}
+		return accountsList;
 	}
 
 }

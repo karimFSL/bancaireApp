@@ -1,6 +1,5 @@
 package dao;
 
-import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -11,30 +10,65 @@ import util.DBUtil;
 
 public class ClientDao {
 
-	public ObservableList<Client> trouverClients() {
+	public static ObservableList<Client> getClients() throws ClassNotFoundException, SQLException {
 
-		ObservableList<Client> lstClients = FXCollections.observableArrayList();
+		ObservableList<Client> clientsList = FXCollections.observableArrayList();
+		String selectStmt = "SELECT Id_Client, Nom_Cl, Prenom_Cl,Ville_Cl,Adresse_Cl, tel_Cl, email_Cl, birthday  FROM client";
 
+		// Execute SELECT statement
 		try {
-			Connection connect = DBUtil.initConnection();
-			java.sql.Statement state = connect.createStatement();
-			ResultSet result = state.executeQuery(
-					"SELECT Id_Client, Nom_Cl, Prenom_Cl,Ville_Cl,Adresse_Cl, tel_Cl, email_Cl, birthday  FROM client");
-			while (result.next()) {
-				Client unClient = new Client(result.getInt("Id_Client"), result.getString("nom_Cl"),
-						result.getString("prenom_Cl"), result.getString("Ville_CL"), result.getString("Adresse_Cl"),
-						result.getString("tel_Cl"), result.getString("email_Cl"), result.getString("birthday"));
-				lstClients.add(unClient);
-			}
-
+			// Get ResultSet from dbExecuteQuery method
+			ResultSet rsEmp = DBUtil.dbExecuteQuery(selectStmt);
+			// Send ResultSet to the getEmployeeFromResultSet method and get employee object
+			clientsList = getClientsFromResultSet(rsEmp);
+			// Return employee object
+			return clientsList;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("While retrieving clients, an error occurred: " + e);
+			// Return exception
+			throw e;
 		}
-		return lstClients;
+	}
 
-		// ------ici creer methode pour inserer new person dans la BDD getpersondata
-		// ..pfff
+	public static ObservableList<Client> getClientsByNomEtPrenom(String nom, String prenom, String ville)
+			throws ClassNotFoundException, SQLException {
 
+		ObservableList<Client> clientsList = FXCollections.observableArrayList();
+		
+		StringBuilder builderSelectStmt = new StringBuilder( "SELECT Id_Client, Nom_Cl, Prenom_Cl,Ville_Cl,Adresse_Cl, tel_Cl, email_Cl, birthday  FROM client WHERE Nom_Cl='"
+				+ nom + "' AND Prenom_Cl='" + prenom + "'");
+		
+		if (!ville.isEmpty()) {
+			builderSelectStmt.append(" AND Ville_Cl='" + ville + "'");
+		}
+
+		// Execute SELECT statement
+		try {
+			// Get ResultSet from dbExecuteQuery method
+			ResultSet rsEmp = DBUtil.dbExecuteQuery(builderSelectStmt.toString());
+			// Send ResultSet to the getEmployeeFromResultSet method and get employee object
+			clientsList = getClientsFromResultSet(rsEmp);
+			// Return employee object
+			return clientsList;
+		} catch (SQLException e) {
+			System.out.println("While retrieving clients, an error occurred: " + e);
+			// Return exception
+			throw e;
+		}
+	}
+
+	// Use ResultSet from DB as parameter and set ObservableList<Client> Object's
+	// attributes
+	// and return ObservableList<Client> object.
+	private static ObservableList<Client> getClientsFromResultSet(ResultSet rs) throws SQLException {
+		ObservableList<Client> clientsList = FXCollections.observableArrayList();
+		while (rs.next()) {
+			Client unClient = new Client(rs.getInt("Id_Client"), rs.getString("nom_Cl"), rs.getString("prenom_Cl"),
+					rs.getString("Ville_CL"), rs.getString("Adresse_Cl"), rs.getString("tel_Cl"),
+					rs.getString("email_Cl"), rs.getString("birthday"));
+			clientsList.add(unClient);
+		}
+		return clientsList;
 	}
 
 }

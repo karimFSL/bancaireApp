@@ -15,16 +15,16 @@ public class Compte {
 	private StringProperty prenomClient;
 	private StringProperty date_compte;
 
-	public Compte(int i, int j, int k, String l, String m, String n) {
+	public Compte(int idCompte, int soldeCompte, int idClient, String nomClient, String prenomClient, String dateCompte) {
 		super();
 
-		this.id_compte = new SimpleIntegerProperty(i);
-		this.solde_compte = new SimpleIntegerProperty(j);
-		this.idClient = new SimpleIntegerProperty(k);
+		this.id_compte = new SimpleIntegerProperty(idCompte);
+		this.solde_compte = new SimpleIntegerProperty(soldeCompte);
+		this.idClient = new SimpleIntegerProperty(idClient);
 		// details
-		this.nomClient = new SimpleStringProperty(l);
-		this.prenomClient = new SimpleStringProperty(m);
-		this.date_compte = new SimpleStringProperty(n);
+		this.nomClient = new SimpleStringProperty(nomClient);
+		this.prenomClient = new SimpleStringProperty(prenomClient);
+		this.date_compte = new SimpleStringProperty(dateCompte);
 
 	}
 
@@ -99,6 +99,12 @@ public class Compte {
 
 	public final void setDate_compte(final String date_compte) {
 		this.date_compteProperty().set(date_compte);
+	}
+
+	@Override
+	public String toString() {
+		return "Compte [id_compte=" + id_compte + ", idClient=" + idClient + ", solde_compte=" + solde_compte
+				+ ", nomClient=" + nomClient + ", prenomClient=" + prenomClient + ", date_compte=" + date_compte + "]";
 	}
 
 }

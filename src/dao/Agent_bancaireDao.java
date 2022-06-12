@@ -11,26 +11,36 @@ import util.DBUtil;
 
 public class Agent_bancaireDao {
 
-	public boolean verifLogin(String email, String password) {
-		// TODO Auto-generated method stub
+	public static Agent_bancaire searchAgentBancaire(String email, String password)
+			throws ClassNotFoundException, SQLException {
 
-		ObservableList<Agent_bancaire> lstPersonnel = FXCollections.observableArrayList();
+		String selectStmt = "SELECT userEmail, userMdp FROM personnel where userEmail='" + email + "' and userMdp='"
+				+ password + "'";
+
+		// Execute SELECT statement
 		try {
-			Connection connect = DBUtil.initConnection();
-
-			java.sql.Statement state = connect.createStatement();
-			ResultSet result = state.executeQuery("SELECT userEmail, userMdp FROM personnel");
-			while (result.next()) {
-				System.out.println(result.getString("userEmail"));
-				if (result.getString("userEmail").equals(email) && result.getString("userMdp").equals(password)) {
-					return true;
-				}
-			}
-
+			// Get ResultSet from dbExecuteQuery method
+			ResultSet rsEmp = DBUtil.dbExecuteQuery(selectStmt);
+			// Send ResultSet to the getEmployeeFromResultSet method and get employee object
+			Agent_bancaire agentBancaire = getAgentBancaireFromResultSet(rsEmp);
+			// Return employee object
+			return agentBancaire;
 		} catch (SQLException e) {
-			e.printStackTrace();
+			System.out.println("While searching an AgentBancaire with " + email + " email, an error occurred: " + e);
+			// Return exception
+			throw e;
 		}
-		return false;
+	}
 
+	// Use ResultSet from DB as parameter and set AgentBancaire Object's attributes
+	// and return employee object.
+	private static Agent_bancaire getAgentBancaireFromResultSet(ResultSet rs) throws SQLException {
+		Agent_bancaire agent = null;
+		if (rs.next()) {
+			agent = new Agent_bancaire();
+			agent.setPersonnelEmail(rs.getString("userEmail"));
+			agent.setPersonnelPassword(rs.getString("userMdp"));
+		}
+		return agent;
 	}
 }
